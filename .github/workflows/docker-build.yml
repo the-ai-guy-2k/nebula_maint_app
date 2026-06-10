@@ -1,4 +1,4 @@
-name: Docker Build
+name: Docker Build and Publish
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +22,10 @@ jobs:
         run: |
           if [ -n "$DH_USER" ] && [ -n "$DH_TOKEN" ]; then
             echo "push=true" >> "$GITHUB_OUTPUT"
+            echo "Docker Hub secrets configured for user: $DH_USER"
           else
             echo "push=false" >> "$GITHUB_OUTPUT"
+            echo "WARNING: DOCKERHUB_USERNAME and/or DOCKERHUB_TOKEN not configured."
           fi
 
       - name: Set up Docker Buildx
@@ -36,10 +38,28 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           tags: taig2k/nebula_maint_app:v0.1
           push: ${{ steps.dockerhub.outputs.push == 'true' }}
+
+      - name: Publication summary
+        run: |
+          {
+            echo "## Docker Hub Publication"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Repository | taig2k/nebula_maint_app |"
+            echo "| Tag | v0.1 |"
+            if [ "${{ steps.dockerhub.outputs.push }}" = "true" ]; then
+              echo "| Result | Published |"
+              echo "| Image | docker.io/taig2k/nebula_maint_app:v0.1 |"
+            else
+              echo "| Result | Build only (push skipped) |"
+              echo "| Action | Add DOCKERHUB_USERNAME and DOCKERHUB_TOKEN repo secrets |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
