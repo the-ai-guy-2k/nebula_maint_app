@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -88,4 +89,4 @@ def edit_prompts(node_name):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host=os.environ.get("FLASK_HOST", "127.0.0.1"))
