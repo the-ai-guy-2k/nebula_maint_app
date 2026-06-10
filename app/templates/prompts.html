@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Management - Nebula Maintenance App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Nebula Maintenance App</h1>
+        {% include '_nav.html' %}
+    </header>
+
+    <main>
+        <p><a href="{{ url_for('home') }}">&larr; Back to Dashboard</a></p>
+
+        <h2>Prompt Management</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Node Name</th>
+                    <th>Node Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for node in nodes %}
+                <tr>
+                    <td>{{ node.node_name }}</td>
+                    <td>{{ node.node_role }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_prompts', node_name=node.node_name) }}">
+                            Edit Prompts
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

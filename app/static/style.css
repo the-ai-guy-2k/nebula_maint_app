@@ -1,0 +1,174 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+    color: #222;
+}
+
+header {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 1rem 2rem;
+}
+
+header h1 {
+    margin: 0 0 0.75rem;
+    font-size: 1.5rem;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 1.5rem;
+    font-weight: bold;
+}
+
+nav a.placeholder {
+    opacity: 0.6;
+    cursor: default;
+}
+
+main {
+    padding: 2rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #eee;
+    font-weight: bold;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.status-current {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-due {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-overdue {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+a {
+    color: #1a4a8a;
+}
+
+.node-details dl {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0.5rem 1rem;
+    background: #fff;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.node-details dt {
+    font-weight: bold;
+}
+
+.node-details dd {
+    margin: 0;
+}
+
+.prompt-section {
+    background: #fff;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.prompt-section h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+}
+
+.prompt-text {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.btn-primary {
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-primary:hover {
+    background: #2a2a4e;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.empty-state {
+    background: #fff;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: #666;
+    font-style: italic;
+}
+
+.prompt-form {
+    background: #fff;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}

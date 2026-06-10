@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ node.node_name }} Prompts - Nebula Maintenance App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Nebula Maintenance App</h1>
+        {% include '_nav.html' %}
+    </header>
+
+    <main>
+        <p><a href="{{ url_for('prompt_management') }}">&larr; Back to Prompt Management</a></p>
+
+        <h2>{{ node.node_name }} Prompts</h2>
+
+        <section class="node-details">
+            <dl>
+                <dt>Node Name</dt>
+                <dd>{{ node.node_name }}</dd>
+
+                <dt>Node Role</dt>
+                <dd>{{ node.node_role }}</dd>
+            </dl>
+        </section>
+
+        <form method="POST" class="prompt-form">
+            <div class="form-group">
+                <label for="maintenance_prompt">Maintenance Prompt</label>
+                <textarea
+                    id="maintenance_prompt"
+                    name="maintenance_prompt"
+                    rows="5"
+                >{{ prompt_entry.get('maintenance_prompt', '') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="restore_prompt">Restore Prompt</label>
+                <textarea
+                    id="restore_prompt"
+                    name="restore_prompt"
+                    rows="5"
+                >{{ prompt_entry.get('restore_prompt', '') }}</textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">Save Prompts</button>
+        </form>
+    </main>
+</body>
+</html>

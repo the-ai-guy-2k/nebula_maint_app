@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Maintenance App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Nebula Maintenance App</h1>
+        {% include '_nav.html' %}
+    </header>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Node Name</th>
+                    <th>Node Role</th>
+                    <th>Status</th>
+                    <th>Last Maintenance Date</th>
+                    <th>Days Since Maintenance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for node in nodes %}
+                <tr>
+                    <td>{{ node.node_name }}</td>
+                    <td>{{ node.node_role }}</td>
+                    <td>
+                        <span class="status-badge status-{{ node.status | lower }}">
+                            {{ node.status }}
+                        </span>
+                    </td>
+                    <td>{{ node.last_maintenance_date or "—" }}</td>
+                    <td>
+                        {% if node.days_since is not none %}
+                            {{ node.days_since }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('maintenance_page', node_name=node.node_name) }}">
+                            Perform Maintenance
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

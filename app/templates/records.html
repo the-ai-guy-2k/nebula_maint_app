@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if node_name %}
+            {{ node_name }} History - Nebula Maintenance App
+        {% else %}
+            Maintenance Records - Nebula Maintenance App
+        {% endif %}
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Nebula Maintenance App</h1>
+        {% include '_nav.html' %}
+    </header>
+
+    <main>
+        <p>
+            {% if node_name %}
+                <a href="{{ url_for('maintenance_page', node_name=node_name) }}">&larr; Back to {{ node_name }} Maintenance</a>
+            {% else %}
+                <a href="{{ url_for('home') }}">&larr; Back to Dashboard</a>
+            {% endif %}
+        </p>
+
+        <h2>
+            {% if node_name %}
+                {{ node_name }} Maintenance History
+            {% else %}
+                Maintenance Records
+            {% endif %}
+        </h2>
+
+        {% if records %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Node</th>
+                    <th>Activity Type</th>
+                    <th>Notes</th>
+                    <th>Backup Filename</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.node }}</td>
+                    <td>{{ record.activity_type }}</td>
+                    <td>{{ record.notes or "—" }}</td>
+                    <td>{{ record.backup_filename or "—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-state">No maintenance records found.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

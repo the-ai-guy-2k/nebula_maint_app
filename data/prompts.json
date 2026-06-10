@@ -1,0 +1,11 @@
+[
+  {
+    "node_name": "OG",
+    "maintenance_prompt": "Export governance configuration backup and verify policy sync.",
+    "restore_prompt": "Restore governance configuration from the latest backup archive."
+  },
+  {
+    "node_name": "Cyka",
+    "maintenance_prompt": "Run band manager maintenance checklist and confirm roster integrity."
+  }
+]

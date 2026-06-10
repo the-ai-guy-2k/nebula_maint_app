@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ node.node_name }} Maintenance - Nebula Maintenance App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Nebula Maintenance App</h1>
+        {% include '_nav.html' %}
+    </header>
+
+    <main>
+        <p><a href="{{ url_for('home') }}">&larr; Back to Dashboard</a></p>
+
+        <h2>Perform Maintenance</h2>
+
+        <section class="node-details">
+            <dl>
+                <dt>Node Name</dt>
+                <dd>{{ node.node_name }}</dd>
+
+                <dt>Node Role</dt>
+                <dd>{{ node.node_role }}</dd>
+
+                <dt>Current Status</dt>
+                <dd>
+                    <span class="status-badge status-{{ node.status | lower }}">
+                        {{ node.status }}
+                    </span>
+                </dd>
+
+                <dt>Last Maintenance Date</dt>
+                <dd>{{ node.last_maintenance_date or "—" }}</dd>
+            </dl>
+        </section>
+
+        <section class="prompt-section">
+            <h3>Maintenance Prompt</h3>
+            <p class="prompt-text">{{ maintenance_prompt }}</p>
+        </section>
+
+        <section class="prompt-section">
+            <h3>Restore Prompt</h3>
+            <p class="prompt-text">{{ restore_prompt }}</p>
+        </section>
+
+        <div class="action-row">
+            <form method="POST" action="{{ url_for('complete_maintenance', node_name=node.node_name) }}">
+                <button type="submit" class="btn-primary">Mark Maintenance Complete</button>
+            </form>
+            <a href="{{ url_for('node_maintenance_history', node_name=node.node_name) }}">
+                View History
+            </a>
+        </div>
+    </main>
+</body>
+</html>

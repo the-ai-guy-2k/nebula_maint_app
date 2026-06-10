@@ -1,0 +1,44 @@
+[
+  {
+    "node_name": "OG",
+    "node_role": "Governance",
+    "last_maintenance_date": "2026-06-08",
+    "status": "Current"
+  },
+  {
+    "node_name": "OG2",
+    "node_role": "Governance",
+    "last_maintenance_date": "2026-06-01",
+    "status": "Due"
+  },
+  {
+    "node_name": "Cyka",
+    "node_role": "Band Manager",
+    "last_maintenance_date": "2026-05-20",
+    "status": "Overdue"
+  },
+  {
+    "node_name": "Clooney",
+    "node_role": "DevOps",
+    "last_maintenance_date": "2026-06-05",
+    "status": "Current"
+  },
+  {
+    "node_name": "Clooney2",
+    "node_role": "DevOps",
+    "last_maintenance_date": "2026-06-09",
+    "status": "Current"
+  },
+  {
+    "node_name": "Clooney3",
+    "node_role": "DevOps",
+    "last_maintenance_date": "2026-05-28",
+    "status": "Due"
+  },
+  {
+    "node_name": "Spectrum",
+    "node_role": "Research",
+    "last_maintenance_date": "2026-05-15",
+    "status": "Overdue"
+  }
+]
