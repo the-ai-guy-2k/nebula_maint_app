@@ -14,6 +14,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Verify Docker Hub secrets
+        env:
+          DH_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DH_USER" ]; then
+            echo "ERROR: DOCKERHUB_USERNAME secret is missing or empty."
+            exit 1
+          fi
+          if [ -z "$DH_TOKEN" ]; then
+            echo "ERROR: DOCKERHUB_TOKEN secret is missing or empty."
+            exit 1
+          fi
+          echo "Docker Hub credentials detected."
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
