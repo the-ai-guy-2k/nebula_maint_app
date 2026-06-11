@@ -1,5 +1,7 @@
 name: Terraform PE Deploy
 
+# PE deployment for Nebula Maintenance App on AWS EC2 (us-east-1)
+
 on:
   workflow_dispatch:
   push:
