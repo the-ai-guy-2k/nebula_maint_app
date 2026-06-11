@@ -9,3 +9,10 @@ instance/
 .coverage
 htmlcov/
 *.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+terraform/terraform.tfvars

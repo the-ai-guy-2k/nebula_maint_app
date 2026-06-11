@@ -1,0 +1,67 @@
+name: Terraform PE Deploy
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_WORKING_DIR: terraform
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Terraform Format Check
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve tfplan
+
+      - name: Capture Terraform outputs
+        id: tf_outputs
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          echo "ec2_public_ip=$(terraform output -raw ec2_public_ip)" >> "$GITHUB_OUTPUT"
+          echo "app_url=$(terraform output -raw app_url)" >> "$GITHUB_OUTPUT"
+
+      - name: Deployment summary
+        run: |
+          {
+            echo "## PE Deployment Summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| EC2 Public IP | ${{ steps.tf_outputs.outputs.ec2_public_ip }} |"
+            echo "| App URL | ${{ steps.tf_outputs.outputs.app_url }} |"
+            echo "| Docker Image | taig2k/nebula_maint_app:v0.1 |"
+            echo "| AWS Region | ${{ secrets.AWS_REGION }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
