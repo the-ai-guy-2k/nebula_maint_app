@@ -2,8 +2,8 @@
 
 **ACI:** ACI-PE-002  
 **Date:** 2026-06-11  
-**Branch:** `feature/pe-aws-ec2`  
-**Deployment Status:** **BLOCKED — awaiting AWS GitHub secrets**
+**Branch:** `feature/pe-aws-ec2` (not merged to `deployable`)  
+**Deployment Status:** **SUCCESS — PE live on AWS EC2**
 
 ---
 
@@ -33,11 +33,13 @@
 
 ---
 
-## Expected App URL
+## Published Environment
 
-```
-http://<ec2-public-ip>:5000
-```
+| Field | Value |
+|-------|-------|
+| EC2 Public IP | `98.82.24.178` |
+| App URL | [http://98.82.24.178:5000](http://98.82.24.178:5000) |
+| EC2 Tag | `nebula-maint-app-pe-ec2` |
 
 ---
 
@@ -62,11 +64,34 @@ http://<ec2-public-ip>:5000
 | Result | **FAILURE** |
 | Failed Step | Verify AWS secrets |
 | Error | `AWS_ACCESS_KEY_ID` and/or `AWS_SECRET_ACCESS_KEY` missing or empty |
-| Secrets visible to workflow | **NO** |
-| Docker login attempted | N/A |
-| Terraform apply | Skipped |
 
-**Root cause:** AWS IAM credentials are not yet loaded into nebula_maint_app GitHub repository secrets.
+**Root cause:** AWS IAM credentials were not yet loaded into nebula_maint_app GitHub repository secrets.
+
+## Deployment Attempt #3 (Successful)
+
+| Field | Value |
+|-------|-------|
+| Workflow Run | [#27316135616](https://github.com/the-ai-guy-2k/nebula_maint_app/actions/runs/27316135616) |
+| Commit | `6601f80` |
+| Result | **SUCCESS** |
+| Terraform init | Passed |
+| Terraform fmt -check | Passed |
+| Terraform validate | Passed |
+| Terraform plan | Passed |
+| Terraform apply | Passed (~1 min) |
+
+---
+
+## Validation
+
+| Check | Status | Evidence |
+|-------|--------|----------|
+| Terraform apply | **Pass** | Workflow run #27316135616 |
+| EC2 instance exists | **Pass** | Instance tagged `nebula-maint-app-pe-ec2` in `us-east-1` |
+| Public IP output | **Pass** | `98.82.24.178` |
+| App HTTP 200 | **Pass** | `GET http://98.82.24.178:5000/` → 200 |
+| Dashboard title | **Pass** | "Nebula Maintenance App" present |
+| All 7 nodes displayed | **Pass** | OG, OG2, Cyka, Clooney, Clooney2, Clooney3, Spectrum |
 
 ---
 
@@ -74,31 +99,25 @@ http://<ec2-public-ip>:5000
 
 | Secret | Status |
 |--------|--------|
-| `AWS_ACCESS_KEY_ID` | Required — verify in repo settings |
-| `AWS_SECRET_ACCESS_KEY` | Required — verify in repo settings |
+| `AWS_ACCESS_KEY_ID` | Configured |
+| `AWS_SECRET_ACCESS_KEY` | Configured |
 | `AWS_REGION` | Optional — workflow defaults to `us-east-1` |
 
 ---
 
-## Deployment Status
+## Deployment Status Summary
 
 | Check | Status |
 |-------|--------|
 | Terraform files created | Complete |
 | GitHub Actions workflow created | Complete |
-| Workflow triggered | Complete (run #1 failed) |
-| Terraform apply | Pending |
-| EC2 instance running | Pending |
-| App reachable | Pending |
+| Workflow triggered | Complete |
+| Terraform apply | Complete |
+| EC2 instance running | Complete |
+| App reachable | Complete |
 
----
-
-## Next Steps
-
-1. Add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to nebula_maint_app repository secrets
-2. Re-run **Terraform PE Deploy** workflow on `feature/pe-aws-ec2`
-3. Record `ec2_public_ip` and `app_url` from workflow summary
-4. Validate app at `http://<public-ip>:5000`
+**PA status:** Achieved (prior validation)  
+**PE status:** Live — first AWS Published Environment operational
 
 ---
 
