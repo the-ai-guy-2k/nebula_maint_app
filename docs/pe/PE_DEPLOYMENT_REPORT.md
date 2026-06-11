@@ -51,7 +51,22 @@ http://<ec2-public-ip>:5000
 | Failed Step | Configure AWS credentials |
 | Error | `Input required and not supplied: aws-region` |
 
-**Root cause:** `AWS_REGION` GitHub secret was not configured. Workflow updated to use hardcoded `us-east-1`. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` must also be present in repository secrets.
+**Root cause:** `AWS_REGION` GitHub secret was not configured. Workflow updated to use hardcoded `us-east-1`.
+
+## Deployment Attempt #2
+
+| Field | Value |
+|-------|-------|
+| Workflow Run | [#27315708846](https://github.com/the-ai-guy-2k/nebula_maint_app/actions/runs/27315708846) |
+| Commit | `2fc0ec1` |
+| Result | **FAILURE** |
+| Failed Step | Verify AWS secrets |
+| Error | `AWS_ACCESS_KEY_ID` and/or `AWS_SECRET_ACCESS_KEY` missing or empty |
+| Secrets visible to workflow | **NO** |
+| Docker login attempted | N/A |
+| Terraform apply | Skipped |
+
+**Root cause:** AWS IAM credentials are not yet loaded into nebula_maint_app GitHub repository secrets.
 
 ---
 
