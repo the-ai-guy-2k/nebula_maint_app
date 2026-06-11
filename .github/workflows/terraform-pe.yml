@@ -2,6 +2,12 @@ name: Terraform PE Deploy
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/pe-aws-ec2
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform-pe.yml"
 
 env:
   TF_WORKING_DIR: terraform
