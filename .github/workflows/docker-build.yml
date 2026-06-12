@@ -43,7 +43,9 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          tags: taig2k/nebula_maint_app:v0.1
+          tags: |
+            taig2k/nebula_maint_app:v0.2
+            taig2k/nebula_maint_app:latest
           push: true
 
       - name: Publication summary
@@ -54,7 +56,7 @@ jobs:
             echo "| Field | Value |"
             echo "|-------|-------|"
             echo "| Repository | taig2k/nebula_maint_app |"
-            echo "| Tag | v0.1 |"
+            echo "| Tags | v0.2, latest |"
             echo "| Result | Published |"
-            echo "| Image | docker.io/taig2k/nebula_maint_app:v0.1 |"
+            echo "| Images | docker.io/taig2k/nebula_maint_app:v0.2, docker.io/taig2k/nebula_maint_app:latest |"
           } >> "$GITHUB_STEP_SUMMARY"
