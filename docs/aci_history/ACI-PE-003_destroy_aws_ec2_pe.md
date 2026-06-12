@@ -2,8 +2,8 @@
 
 **Project:** Nebula Maintenance App  
 **Branch:** `feature/pe-aws-ec2`  
-**Date:** 2026-06-11  
-**Status:** In progress
+**Date:** 2026-06-12  
+**Status:** **Complete**
 
 ---
 
@@ -15,7 +15,7 @@ Safely shut down and destroy the Maintenance App AWS Published Environment using
 
 ## Current Truth (Pre-Destroy)
 
-- PE exists on AWS EC2 in `us-east-1`
+- PE existed on AWS EC2 in `us-east-1`
 - App reachable at http://98.82.24.178:5000
 - EC2 instance: `i-0ca9f5f81a35f9fff`
 - Terraform created the environment (ACI-PE-002)
@@ -33,9 +33,9 @@ Safely shut down and destroy the Maintenance App AWS Published Environment using
 | 3 | Safety: destroy PE only; preserve Docker Hub, repo, PA | Complete |
 | 4 | Create `docs/pe/PE_DESTROY_REPORT.md` | Complete |
 | 5 | Save ACI artifact (this file) | Complete |
-| 6 | Commit and push: "Add PE destroy workflow" | Pending |
-| 7 | Run destroy workflow manually | Pending |
-| 8 | Validate destroy and update reports | Pending |
+| 6 | Commit and push: "Add PE destroy workflow" | Complete (`e65c749`) |
+| 7 | Run destroy workflow manually | Complete — [run #27385426227](https://github.com/the-ai-guy-2k/nebula_maint_app/actions/runs/27385426227) |
+| 8 | Validate destroy and update reports | Complete |
 
 ---
 
@@ -50,19 +50,31 @@ Safely shut down and destroy the Maintenance App AWS Published Environment using
 
 ---
 
-## Safety Rules
+## Destroy Evidence
 
-- Do not destroy Docker Hub image
-- Do not delete GitHub repository
-- Do not delete PA artifact
-- Do not merge branch to `deployable`
-- Do not manually delete AWS resources unless Terraform destroy fails
+| Item | Value |
+|------|-------|
+| Workflow run | [#27385426227](https://github.com/the-ai-guy-2k/nebula_maint_app/actions/runs/27385426227) |
+| Terraform destroy | Success |
+| Former app URL | http://98.82.24.178:5000 (no longer responds) |
+| EC2 instance | Terminated |
+| PE AWS resources | All removed |
+
+---
+
+## Safety Rules (Observed)
+
+- Did not destroy Docker Hub image
+- Did not delete GitHub repository
+- Did not delete PA artifact
+- Did not merge `feature/pe-aws-ec2` to `deployable`
+- Did not manually delete AWS resources
 
 ---
 
 ## Stop Point
 
-Maintenance App PE destroyed safely through Terraform with evidence recorded in `docs/pe/PE_DESTROY_REPORT.md`.
+**Achieved.** Maintenance App PE destroyed safely through Terraform with evidence in `docs/pe/PE_DESTROY_REPORT.md`.
 
 ---
 
