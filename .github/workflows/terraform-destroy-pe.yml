@@ -1,0 +1,131 @@
+name: Terraform PE Destroy
+
+# Safely destroy Nebula Maintenance App PE on AWS EC2 (us-east-1)
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_WORKING_DIR: terraform
+  AWS_REGION: us-east-1
+  PROJECT_PREFIX: nebula-maint-app-pe
+
+jobs:
+  terraform-destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify AWS secrets
+        env:
+          AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -z "$AWS_KEY" ]; then
+            echo "ERROR: AWS_ACCESS_KEY_ID secret is missing or empty."
+            exit 1
+          fi
+          if [ -z "$AWS_SECRET" ]; then
+            echo "ERROR: AWS_SECRET_ACCESS_KEY secret is missing or empty."
+            exit 1
+          fi
+          echo "AWS credentials detected."
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Import PE resources if state is empty
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          set -euo pipefail
+          PREFIX="${{ env.PROJECT_PREFIX }}"
+          REGION="${{ env.AWS_REGION }}"
+
+          if terraform state list 2>/dev/null | grep -q '^aws_instance\.app$'; then
+            echo "Terraform state already contains PE resources."
+            exit 0
+          fi
+
+          echo "State empty — importing existing PE resources from AWS..."
+
+          VPC_ID=$(aws ec2 describe-vpcs \
+            --region "$REGION" \
+            --filters "Name=tag:Name,Values=${PREFIX}-vpc" \
+            --query "Vpcs[0].VpcId" --output text)
+          if [ "$VPC_ID" = "None" ] || [ -z "$VPC_ID" ]; then
+            echo "No PE VPC found — nothing to import."
+            exit 0
+          fi
+
+          IGW_ID=$(aws ec2 describe-internet-gateways \
+            --region "$REGION" \
+            --filters "Name=attachment.vpc-id,Values=$VPC_ID" \
+            --query "InternetGateways[0].InternetGatewayId" --output text)
+
+          SUBNET_ID=$(aws ec2 describe-subnets \
+            --region "$REGION" \
+            --filters "Name=tag:Name,Values=${PREFIX}-public-subnet" \
+            --query "Subnets[0].SubnetId" --output text)
+
+          RT_ID=$(aws ec2 describe-route-tables \
+            --region "$REGION" \
+            --filters "Name=tag:Name,Values=${PREFIX}-public-rt" \
+            --query "RouteTables[0].RouteTableId" --output text)
+
+          SG_ID=$(aws ec2 describe-security-groups \
+            --region "$REGION" \
+            --filters "Name=group-name,Values=${PREFIX}-sg" \
+            --query "SecurityGroups[0].GroupId" --output text)
+
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --region "$REGION" \
+            --filters "Name=tag:Name,Values=${PREFIX}-ec2" "Name=instance-state-name,Values=running,stopped,stopping,pending" \
+            --query "Reservations[0].Instances[0].InstanceId" --output text)
+
+          terraform import aws_vpc.main "$VPC_ID"
+          terraform import aws_internet_gateway.main "$IGW_ID"
+          terraform import aws_subnet.public "$SUBNET_ID"
+          terraform import aws_route_table.public "$RT_ID"
+          terraform import aws_route_table_association.public "${SUBNET_ID}/${RT_ID}"
+          terraform import aws_security_group.app "$SG_ID"
+          terraform import aws_instance.app "$INSTANCE_ID"
+
+          echo "Import complete."
+          terraform state list
+
+      - name: Terraform Plan Destroy
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -destroy
+
+      - name: Terraform Destroy
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform destroy -auto-approve
+
+      - name: Destroy summary
+        run: |
+          {
+            echo "## PE Destroy Summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| AWS Region | ${{ env.AWS_REGION }} |"
+            echo "| Project Prefix | ${{ env.PROJECT_PREFIX }} |"
+            echo "| Result | Terraform destroy completed |"
+            echo "| Docker Image | Preserved — taig2k/nebula_maint_app:v0.1 |"
+            echo "| GitHub Repo | Preserved |"
+          } >> "$GITHUB_STEP_SUMMARY"
