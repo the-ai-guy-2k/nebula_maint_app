@@ -1,0 +1,91 @@
+name: Terraform PE Deploy
+
+# PE deployment for Nebula Maintenance App on AWS EC2 (us-east-1)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/pe-aws-ec2
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform-pe.yml"
+
+env:
+  TF_WORKING_DIR: terraform
+  AWS_REGION: us-east-1
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify AWS secrets
+        env:
+          AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -z "$AWS_KEY" ]; then
+            echo "ERROR: AWS_ACCESS_KEY_ID secret is missing or empty."
+            exit 1
+          fi
+          if [ -z "$AWS_SECRET" ]; then
+            echo "ERROR: AWS_SECRET_ACCESS_KEY secret is missing or empty."
+            exit 1
+          fi
+          echo "AWS credentials detected."
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Terraform Format Check
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve tfplan
+
+      - name: Capture Terraform outputs
+        id: tf_outputs
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          echo "ec2_public_ip=$(terraform output -raw ec2_public_ip)" >> "$GITHUB_OUTPUT"
+          echo "app_url=$(terraform output -raw app_url)" >> "$GITHUB_OUTPUT"
+
+      - name: Deployment summary
+        run: |
+          {
+            echo "## PE Deployment Summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| EC2 Public IP | ${{ steps.tf_outputs.outputs.ec2_public_ip }} |"
+            echo "| App URL | ${{ steps.tf_outputs.outputs.app_url }} |"
+            echo "| Docker Image | taig2k/nebula_maint_app:v0.1 |"
+            echo "| AWS Region | ${{ env.AWS_REGION }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

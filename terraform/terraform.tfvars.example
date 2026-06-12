@@ -1,0 +1,4 @@
+aws_region   = "us-east-1"
+project_name = "nebula-maint-app-pe"
+docker_image = "taig2k/nebula_maint_app:v0.1"
+instance_type = "t3.micro"
